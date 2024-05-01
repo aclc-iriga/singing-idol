@@ -395,15 +395,18 @@ class Admin extends User
 
                             // re-arrange onward ranks
                             $onwards = [];
-                            for($x=$k; $x<sizeof($unique_final_fractional_ranks); $x++) {
+                            for($x=$k+1; $x<sizeof($unique_final_fractional_ranks); $x++) {
                                 $onwards[] = $unique_final_fractional_ranks[$x];
                             }
                             sort($onwards);
                             $r = 0;
-                            for($x=$k; $x<sizeof($unique_final_fractional_ranks); $x++) {
+                            for($x=$k+1; $x<sizeof($unique_final_fractional_ranks); $x++) {
                                 $unique_final_fractional_ranks[$x] = $onwards[$r];
                                 $r += 1;
                             }
+
+                            if($k == 1)
+                                $result['test'] = $unique_final_fractional_ranks;
                         }
 
                         // fill end of $unique_final_fractional_ranks

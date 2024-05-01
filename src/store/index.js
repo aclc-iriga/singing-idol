@@ -12,7 +12,7 @@ export default createStore({
 
     state: {
         app: {
-            title: 'Alinsangan Singing Idol 2023',
+            title: 'Alinsangan Singing Idol 2024',
             org: 'ACLC College Iriga',
             backendDir: 'app',
             sideNav: false
