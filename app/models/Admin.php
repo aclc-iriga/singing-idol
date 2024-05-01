@@ -360,84 +360,79 @@ class Admin extends User
         // determine winners (case-to-case basis depending on organizer's guidelines)
         $i = 0;
         $event_titles = $event->getAllTitles();
+
+        // Champion 1 (Within Nabua)
         foreach($event_titles as $key_title => $title) {
-            if($event->getId() == 1 && ($title->getRank() == 1 || $title->getRank() == 2)) { // Champion 1 (Within Nabua), Champion 2 (Outside Nabua)
+            if($event->getId() == 1 && $title->getRank() == 1) {
                 $filled = false;
                 for($j=0; $j<sizeof($unique_final_fractional_ranks); $j++) {
-                    foreach($result['teams'] as $key_team => $arr_team) {
-                        if(!isset($result['winners'][$key_team])) {
-                            if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
+                    foreach ($result['teams'] as $key_team => $arr_team) {
+                        if (!isset($result['winners'][$key_team])) {
+                            if ($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
                                 $is_local = (Team::findById($arr_team['id']))->getIsLocal();
-                                if(($title->getRank() == 1 && $is_local) || ($title->getRank() == 2 && !$is_local)) {
+                                if ($is_local) {
                                     $t = trim($title->getTitle());
                                     $result['teams'][$key_team]['title'] = $t;
                                     $result['winners'][$key_team] = $t;
                                     $filled = true;
-                                }
-                            }
-                        }
-                    }
-                    if($filled) {
-                        $k = $title->getRank() - 1;
-                        if(isset($unique_final_fractional_ranks[$k])) {
-                            // swap $unique_final_fractional_ranks[$j] with $unique_final_fractional_ranks[$k] (nth element)
-                            $temp = $unique_final_fractional_ranks[$k];
-                            $unique_final_fractional_ranks[$k] = $unique_final_fractional_ranks[$j];
-                            $unique_final_fractional_ranks[$j] = $temp;
-
-                            // push back $unique_final_fractional_ranks[$k] if there are still winners with this rank
-                            foreach($result['teams'] as $key_team => $arr_team) {
-                                if(!isset($result['winners'][$key_team]) && $arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$k]) {
-                                    $unique_final_fractional_ranks[] = $unique_final_fractional_ranks[$k];
                                     break;
                                 }
                             }
-
-                            // re-arrange onward ranks
-                            $onwards = [];
-                            for($x=$k+1; $x<sizeof($unique_final_fractional_ranks); $x++) {
-                                $onwards[] = $unique_final_fractional_ranks[$x];
-                            }
-                            sort($onwards);
-                            $r = 0;
-                            for($x=$k+1; $x<sizeof($unique_final_fractional_ranks); $x++) {
-                                $unique_final_fractional_ranks[$x] = $onwards[$r];
-                                $r += 1;
-                            }
-
-                            if($k == 1)
-                                $result['test'] = $unique_final_fractional_ranks;
                         }
-
-                        // fill end of $unique_final_fractional_ranks
-                        $copied_fractional_ranks = array_values($unique_final_fractional_ranks);
-                        sort($copied_fractional_ranks);
-                        $trail = [];
-                        for($x=$k; $x<=(sizeof($event_titles) - sizeof($unique_final_fractional_ranks)); $x++) {
-                            $trail[] = $copied_fractional_ranks[sizeof($copied_fractional_ranks)-1];
-                        }
-                        $unique_final_fractional_ranks = array_merge($unique_final_fractional_ranks, $trail);
+                    }
+                    if ($filled)
                         break;
-                    }
                 }
+                break;
             }
-            else {
-                // update title of $unique_final_fractional_ranks[$i]'th team
-                foreach($result['teams'] as $key_team => $arr_team) {
-                    if(!isset($result['winners'][$key_team])) {
-                        if($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$i]) {
-                            $t = trim($title->getTitle());
-                            $result['teams'][$key_team]['title'] = $t;
-                            if($t != '')
-                                $result['winners'][$key_team] = $t;
+        }
+
+        // Champion 2 (Outside Nabua)
+        foreach($event_titles as $key_title => $title) {
+            if($event->getId() == 1 && $title->getRank() == 2) {
+                $filled = false;
+                for($j=0; $j<sizeof($unique_final_fractional_ranks); $j++) {
+                    foreach ($result['teams'] as $key_team => $arr_team) {
+                        if (!isset($result['winners'][$key_team])) {
+                            if ($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
+                                $is_local = (Team::findById($arr_team['id']))->getIsLocal();
+                                if (!$is_local) {
+                                    $t = trim($title->getTitle());
+                                    $result['teams'][$key_team]['title'] = $t;
+                                    $result['winners'][$key_team] = $t;
+                                    $filled = true;
+                                    break;
+                                }
+                            }
                         }
                     }
+                    if ($filled)
+                        break;
+                }
+                break;
+            }
+        }
+
+        // Runner Up
+        foreach($event_titles as $key_title => $title) {
+            if($event->getId() == 1 && (!in_array($title->getRank(), [1, 2]))) {
+                $filled = false;
+                for($j=0; $j<sizeof($unique_final_fractional_ranks); $j++) {
+                    foreach ($result['teams'] as $key_team => $arr_team) {
+                        if (!isset($result['winners'][$key_team])) {
+                            if ($arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$j]) {
+                                $t = trim($title->getTitle());
+                                $result['teams'][$key_team]['title'] = $t;
+                                $result['winners'][$key_team] = $t;
+                                $filled = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ($filled)
+                        break;
                 }
             }
-
-            $i += 1; // ctr of $unique_final_fractional_ranks
-            if($i >= sizeof($unique_final_fractional_ranks))
-                break;
         }
 
         // return $result
