@@ -375,7 +375,6 @@ class Admin extends User
                                     $result['teams'][$key_team]['title'] = $t;
                                     $result['winners'][$key_team] = $t;
                                     $filled = true;
-                                    break;
                                 }
                             }
                         }
@@ -401,7 +400,6 @@ class Admin extends User
                                     $result['teams'][$key_team]['title'] = $t;
                                     $result['winners'][$key_team] = $t;
                                     $filled = true;
-                                    break;
                                 }
                             }
                         }
@@ -425,7 +423,6 @@ class Admin extends User
                                 $result['teams'][$key_team]['title'] = $t;
                                 $result['winners'][$key_team] = $t;
                                 $filled = true;
-                                break;
                             }
                         }
                     }
