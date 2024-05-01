@@ -36,7 +36,7 @@
 </head>
 <body>
     <div class="container py-5">
-        <h2 class="fw-bolder">Binibining San Vicente (Buhi, Camarines Sur) 2023</h2>
+        <h2 class="fw-bolder">Alinsangan Singing Idol (Nabua, Camarines Sur) 2023</h2>
     </div>
     <div>
         <table>

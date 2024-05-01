@@ -12,6 +12,7 @@ class Team extends App
     protected $number = 0;
     protected $name;
     protected $location;
+    protected $is_local = true;
     protected $avatar;
     protected $disabled = false;
 
@@ -37,6 +38,7 @@ class Team extends App
                 $this->number = $row['number'];
                 $this->name = $row['name'];
                 $this->location = $row['location'];
+                $this->is_local = intval($row['is_local']) == 1;
                 $this->avatar = $row['avatar'];
             }
         }
@@ -64,7 +66,7 @@ class Team extends App
      * Find team by id
      *
      * @param int $id
-     * @return Team|boolean
+     * @return Team|bool
      */
     public static function findById($id)
     {
@@ -87,6 +89,7 @@ class Team extends App
             'number'   => $this->number,
             'name'     => $this->name,
             'location' => $this->location,
+            'is_local' => $this->is_local,
             'avatar'   => $this->avatar,
             'disabled' => $this->disabled
         ];
@@ -134,7 +137,7 @@ class Team extends App
         if(sizeof($eliminated_team_ids) > 0) {
             $sql .= "WHERE id NOT IN (" . implode(', ', $eliminated_team_ids) . ") ";
         }
-        $sql .= "ORDER BY number";
+        $sql .= "ORDER BY number, id";
         $stmt = $team->conn->prepare($sql);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -232,7 +235,7 @@ class Team extends App
 
     /***************************************************************************
      * Get the first Team record
-     * @return Team|boolean
+     * @return Team|bool
      */
     public static function first_record()
     {
@@ -260,8 +263,9 @@ class Team extends App
             App::returnError('HTTP/1.1 409', 'Insert Error: team [id = ' . $this->id . '] already exists.');
 
         // proceed with insert
-        $stmt = $this->conn->prepare("INSERT INTO $this->table(number, name, location, avatar) VALUES(?, ?, ?, ?)");
-        $stmt->bind_param("isss", $this->number, $this->name, $this->location, $this->avatar);
+        $stmt = $this->conn->prepare("INSERT INTO $this->table(number, name, location, is_local, avatar) VALUES(?, ?, ?, ?, ?)");
+        $is_local = $this->is_local ? 1 : 0;
+        $stmt->bind_param("issis", $this->number, $this->name, $this->location, $is_local, $this->avatar);
         $stmt->execute();
         $this->id = $this->conn->insert_id;
     }
@@ -279,8 +283,9 @@ class Team extends App
             App::returnError('HTTP/1.1 404', 'Update Error: team [id = ' . $this->id . '] does not exist.');
 
         // proceed with update
-        $stmt = $this->conn->prepare("UPDATE $this->table SET number = ?, name = ?, location = ?, avatar = ? WHERE id = ?");
-        $stmt->bind_param("isssi", $this->number, $this->name, $this->location, $this->avatar, $this->id);
+        $stmt = $this->conn->prepare("UPDATE $this->table SET number = ?, name = ?, location = ?, is_local = ?, avatar = ? WHERE id = ?");
+        $is_local = $this->is_local ? 1 : 0;
+        $stmt->bind_param("issisi", $this->number, $this->name, $this->location, $is_local, $this->avatar, $this->id);
         $stmt->execute();
     }
 
@@ -338,6 +343,18 @@ class Team extends App
         $this->location = $location;
     }
 
+    
+    /***************************************************************************
+     * Set location
+     *
+     * @param bool $bool
+     * @return void
+     */
+    public function setIsLocal($bool)
+    {
+        $this->is_local = $bool;
+    }
+
 
     /***************************************************************************
      * Set avatar
@@ -392,6 +409,17 @@ class Team extends App
     public function getLocation()
     {
         return $this->location;
+    }
+
+
+    /***************************************************************************
+     * Get is_local
+     *
+     * @return string
+     */
+    public function getIsLocal()
+    {
+        return $this->is_local;
     }
 
 
