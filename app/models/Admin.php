@@ -380,6 +380,11 @@ class Admin extends User
                     if($filled) {
                         $k = $title->getRank() - 1;
                         if(isset($unique_final_fractional_ranks[$k])) {
+                            // swap $unique_final_fractional_ranks[$j] with $unique_final_fractional_ranks[$k] (nth element)
+                            $temp = $unique_final_fractional_ranks[$k];
+                            $unique_final_fractional_ranks[$k] = $unique_final_fractional_ranks[$j];
+                            $unique_final_fractional_ranks[$j] = $temp;
+
                             // push back $unique_final_fractional_ranks[$k] if there are still winners with this rank
                             foreach($result['teams'] as $key_team => $arr_team) {
                                 if(!isset($result['winners'][$key_team]) && $arr_team['rank']['final']['fractional'] == $unique_final_fractional_ranks[$k]) {
@@ -387,11 +392,6 @@ class Admin extends User
                                     break;
                                 }
                             }
-
-                            // swap $unique_final_fractional_ranks[$j] with $unique_final_fractional_ranks[$k] (nth element)
-                            $temp = $unique_final_fractional_ranks[$k];
-                            $unique_final_fractional_ranks[$k] = $unique_final_fractional_ranks[$j];
-                            $unique_final_fractional_ranks[$j] = $temp;
 
                             // re-arrange onward ranks
                             $onwards = [];
