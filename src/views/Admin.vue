@@ -310,15 +310,15 @@
                                     v-for="(winner, winnerIndex) in Object.entries(winners).reverse()"
                                     :key="winner[0]"
                                 >
-                                    <tr v-if="winnerIndex > 0">
+                                    <tr v-if="winnerIndex > 0" :style="winner[1] === '' ? 'display: none' : ''">
                                         <td colspan="3" style="height: 100px;"></td>
                                     </tr>
-                                    <tr>
+                                    <tr :style="winner[1] === '' ? 'display: none' : ''">
                                         <td colspan="3" class="pa-3 text-center" style="border: 1px solid #ddd">
                                             <span class="text-h4 font-weight-bold">{{ winner[1] }}</span>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr :style="winner[1] === '' ? 'display: none' : ''">
                                         <td
                                             class="text-h3 text-center font-weight-bold pl-3 py-3 pr-6"
                                             style="border-left: 1px solid #ddd; border-bottom: 1px solid #ddd;"
